@@ -100,5 +100,5 @@ class MyHandler
   end
 end
 
-server = Jimson::Server.new(MyHandler.new)
-server.start # serve with webrick on http://0.0.0.0:8999/
+server = Jimson::Server.new(MyHandler.new, opts = {host: "localhost", port: 8999})
+server.start # serve with webrick on http://localhost:8999/
