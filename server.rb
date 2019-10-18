@@ -60,10 +60,20 @@ class MyHandler
               ).compute_hash
   end
 
-  def queryLiveCells(lock_hash, capacity)
-    puts lock_hash
-    puts capacity
-    i = getLiveCellsByCapacity(lock_hash, capacity)
+  def queryLiveCellsByCapacity(lock_hash, capacity)
+    from = 1
+    to = 0
+    i = getLiveCells(lock_hash, capacity, from, to)
+
+    {
+      inputs: i.inputs.map(&:to_h),
+      capacity: i.capacities.to_s,
+    }
+  end
+
+  def queryLiveCellsByHeights(lock_hash, from, to)
+    capacity = 2 ** (62) - 1 # integer MAX
+    i = getLiveCells(lock_hash, capacity, from, to)
 
     {
       inputs: i.inputs.map(&:to_h),
@@ -97,6 +107,10 @@ class MyHandler
 
   def systemScript
     system_script
+  end
+
+  def blockNumber
+    get_tip_block_number
   end
 end
 

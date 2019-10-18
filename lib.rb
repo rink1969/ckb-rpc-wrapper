@@ -2,6 +2,11 @@ require 'rubygems'
 require 'bundler/setup'
 require "ckb"
 
+def get_tip_block_number
+  api = CKB::API.new
+  api.get_tip_block_number.to_i
+end
+
 def getLiveCellByTxHashIndex(tx_hash, index)
   out_point = CKB::Types::OutPoint.new(
                 tx_hash: tx_hash,
@@ -57,11 +62,11 @@ def min_output_capacity
 end
 
 # @return [CKB::Types::Output[]]
-def get_unspent_cells(lock_hash)
+def get_unspent_cells(lock_hash, from, to)
   api = CKB::API.new
-  to = api.get_tip_block_number.to_i
+  to = api.get_tip_block_number.to_i if to == 0
   results = []
-  current_from = 1
+  current_from = from
   while current_from <= to
     current_to = [current_from + 100, to].min
     cells = api.get_cells_by_lock_hash(lock_hash, current_from, current_to)
@@ -72,15 +77,15 @@ def get_unspent_cells(lock_hash)
 end
 
 def get_balance(lock_hash)
-  get_unspent_cells(lock_hash).map { |cell| cell.capacity.to_i }.reduce(0, &:+)
+  get_unspent_cells(lock_hash, 1, 0).map { |cell| cell.capacity.to_i }.reduce(0, &:+)
 end
 
-def gather_inputs(lock_hash, capacity, min_capacity)
+def gather_inputs(lock_hash, capacity, min_capacity, from, to, is_assert)
   raise "capacity cannot be less than #{min_capacity}" if capacity < min_capacity
 
   input_capacities = 0
   inputs = []
-  get_unspent_cells(lock_hash).each do |cell|
+  get_unspent_cells(lock_hash, from, to).each do |cell|
     input = CKB::Types::Input.new(
       previous_output: cell.out_point,
       since: 0
@@ -92,18 +97,21 @@ def gather_inputs(lock_hash, capacity, min_capacity)
     break if diff >= min_capacity || diff.zero?
   end
 
-  raise "Capacity not enough!" if input_capacities < capacity
+  raise "Capacity not enough!" if input_capacities < capacity and is_assert
 
   OpenStruct.new(inputs: inputs, capacities: input_capacities)
 end
 
-def getLiveCellsByCapacity(lock_hash, capacity)
+def getLiveCells(lock_hash, capacity, from, to)
   min_capacity = min_output_capacity()
 
   i = gather_inputs(
     lock_hash,
     capacity,
-    min_capacity
+    min_capacity,
+    from,
+    to,
+    false
   )
 end
 
@@ -174,7 +182,10 @@ class Client
     i = gather_inputs(
       lock_hash,
       capacity,
-      min_output_capacity()
+      min_output_capacity(),
+      1,
+      0,
+      true
     )
     input_capacities = i.capacities
 
