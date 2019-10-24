@@ -2,6 +2,8 @@ require 'rubygems'
 require 'bundler/setup'
 require "ckb"
 
+MIN_FEE = 1000 * 2048
+
 def get_tip_block_number
   api = CKB::API.new
   api.get_tip_block_number.to_i
@@ -93,7 +95,7 @@ def gather_inputs(lock_hash, capacity, min_capacity, from, to, is_assert)
     inputs << input
     input_capacities += cell.capacity.to_i
 
-    diff = input_capacities - capacity
+    diff = input_capacities - capacity - MIN_FEE
     break if diff >= min_capacity || diff.zero?
   end
 
@@ -191,7 +193,7 @@ class Client
 
     outputs = [output]
     outputs_data = [output_data]
-    change_output.capacity = input_capacities - capacity
+    change_output.capacity = input_capacities - capacity - MIN_FEE
     if change_output.capacity.to_i > 0
       outputs << change_output
       outputs_data << change_output_data

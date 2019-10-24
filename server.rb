@@ -8,8 +8,6 @@ class MyHandler
   extend Jimson::Handler
 
   def deployContract(privkey, elf_path)
-    puts privkey
-    puts elf_path
     client = Client.new(privkey)
     client.deployContract(elf_path)
   end
@@ -102,6 +100,7 @@ class MyHandler
     tx = CKB::Types::Transaction.from_h(tx_json)
     client = Client.new(privkey)
     stx = client.sign_transaction(tx)
+    puts "tx_hash:", stx.hash
     stx.witnesses
   end
 
