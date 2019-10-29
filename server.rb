@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 
 require_relative "lib"
+require_relative "sync"
 require 'jimson'
 require "money-tree"
 
@@ -113,5 +114,17 @@ class MyHandler
   end
 end
 
-server = Jimson::Server.new(MyHandler.new, opts = {host: "localhost", port: 8999})
-server.start # serve with webrick on http://localhost:8999/
+
+
+  Thread.new {
+    begin
+      s = Sync::new
+      s.sync
+    rescue Exception => e
+      s.close
+      puts "sync exit with exception", e
+    end
+  }
+
+  server = Jimson::Server.new(MyHandler.new, opts = {host: "localhost", port: 8999})
+  server.start # serve with webrick on http://localhost:8999/

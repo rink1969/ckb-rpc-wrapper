@@ -39,6 +39,7 @@ GEM
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 3.0)
       netrc (~> 0.7)
+    sqlite3 (1.4.1)
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.7.6)
@@ -50,6 +51,7 @@ DEPENDENCIES
   ckb-sdk-ruby!
   jimson (~> 0.11.0)
   money-tree
+  sqlite3
 
 RUBY VERSION
    ruby 2.6.3p62

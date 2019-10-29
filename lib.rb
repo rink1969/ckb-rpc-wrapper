@@ -4,6 +4,23 @@ require "ckb"
 
 MIN_FEE = 1000 * 2048
 
+def sync_cells(height)
+  api = CKB::API.new
+  live_cells = []
+  dead_cells = []
+  block = api.get_block_by_number(height)
+  block.transactions.each do |tx|
+    tx.inputs.each do |input|
+      dead_cells << OpenStruct.new(tx_hash: input.previous_output.tx_hash, cell_index: input.previous_output.index)
+    end
+    tx_hash = tx.hash
+    tx.outputs.each_index do |i|
+      live_cells << OpenStruct.new(tx_hash: tx_hash, cell_index: i, capacity: tx.outputs[i].capacity.to_i, height: height)
+    end
+  end
+  OpenStruct.new(live_cells: live_cells, dead_cells: dead_cells)
+end
+
 def get_tip_block_number
   api = CKB::API.new
   api.get_tip_block_number.to_i
