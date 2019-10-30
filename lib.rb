@@ -11,11 +11,30 @@ def sync_cells(height)
   block = api.get_block_by_number(height)
   block.transactions.each do |tx|
     tx.inputs.each do |input|
-      dead_cells << OpenStruct.new(tx_hash: input.previous_output.tx_hash, cell_index: input.previous_output.index)
+      dead_cells << OpenStruct.new(tx_hash: input.previous_output.tx_hash,
+                                   cell_index: input.previous_output.index)
     end
     tx_hash = tx.hash
     tx.outputs.each_index do |i|
-      live_cells << OpenStruct.new(tx_hash: tx_hash, cell_index: i, capacity: tx.outputs[i].capacity.to_i, height: height)
+      if tx.outputs[i].type
+        type_code_hash = tx.outputs[i].type.code_hash
+        type_args = tx.outputs[i].type.args
+        type_hash_type = tx.outputs[i].type.hash_type
+      else
+        type_code_hash = ""
+        type_args = ""
+        type_hash_type = ""
+      end
+      live_cells << OpenStruct.new(tx_hash: tx_hash,
+                                   cell_index: i,
+                                   capacity: tx.outputs[i].capacity.to_i,
+                                   lock_code_hash: tx.outputs[i].lock.code_hash,
+                                   lock_args: tx.outputs[i].lock.args,
+                                   lock_hash_type: tx.outputs[i].lock.hash_type,
+                                   type_code_hash: type_code_hash,
+                                   type_args: type_args,
+                                   type_hash_type: type_hash_type,
+                                   height: height)
     end
   end
   OpenStruct.new(live_cells: live_cells, dead_cells: dead_cells)
