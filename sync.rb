@@ -11,8 +11,9 @@ class Sync
     # Open database
     @db = SQLite3::Database.new('./sync.db')
     # Create tables
-    db.execute "CREATE TABLE IF NOT EXISTS info(tip_height INT)"
-    db.execute "CREATE TABLE IF NOT EXISTS livecells(tx_hash varchar(66),
+    db.execute "CREATE TABLE IF NOT EXISTS info(tip_height INT PRIMARY KEY)"
+    db.execute "CREATE TABLE IF NOT EXISTS livecells(id INTEGER PRIMARY KEY AUTOINCREMENT,
+                                                     tx_hash varchar(66),
                                                      cell_index int,
                                                      capacity int,
                                                      lock_code_hash varchar(66),
