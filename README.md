@@ -174,10 +174,25 @@ curl -X POST --data '{"jsonrpc": "2.0", "method":"sendTransaction", "params":["0
 2. path of transaction(without signature in witnesses). same as `sendTransaction`.
 
 ##### result
-witnesses of the transaction.
+witnesses of the transaction. With WitnessArgs.
 
 ```shell
 curl -X POST --data '{"jsonrpc": "2.0", "method":"sign", "params":["0xc1d3653395d6dc74e11d97a3ca2e4175067b80f525a3d8a2baf9129de4bbbbd3","/path/to/tx"], "id": 1}' http://localhost:8999
+```
+```json
+{"jsonrpc":"2.0","result":["0x55000000100000005500000055000000410000002455311f81df40644fd11f02f26b894bca2b3aa4572f6f3534c3977c31c7daee64302dc7e28a509af3434d96efa16c9f61eda7a9dae55a8e7291d90a26e2e0a700"],"id":1}
+```
+
+### simpleSign
+##### args
+1. privkey of sender.
+2. path of transaction(without signature in witnesses). same as `sendTransaction`.
+
+##### result
+witnesses of the transaction. No WitnessArgs, only sign tx_hash.
+
+```shell
+curl -X POST --data '{"jsonrpc": "2.0", "method":"simpleSign", "params":["0xc1d3653395d6dc74e11d97a3ca2e4175067b80f525a3d8a2baf9129de4bbbbd3","/path/to/tx"], "id": 1}' http://localhost:8999
 ```
 ```json
 {"jsonrpc":"2.0","result":["0x041c4d86a1cb4ca6dc8bee242e012f33f8b2b151ef1340c4d0fd33d511e39c2952eee6276109f0d6a0bef056143b4fce60453559186def5605e88d9b4e9afc8601"],"id":1}

@@ -91,6 +91,11 @@ class MyHandler
     tx_s = File.read(tx_path).strip
     tx_json = JSON.parse(tx_s, symbolize_names: true)
     tx = CKB::Types::Transaction.from_h(tx_json)
+
+    # fix witnesses
+    witnesses = fake_witnesses(tx.inputs.length)
+    tx.witnesses = witnesses
+
     client = Client.new(privkey)
     client.send_transaction(tx)
   end
@@ -99,10 +104,26 @@ class MyHandler
     tx_s = File.read(tx_path).strip
     tx_json = JSON.parse(tx_s, symbolize_names: true)
     tx = CKB::Types::Transaction.from_h(tx_json)
+
+    # fix witnesses
+    witnesses = fake_witnesses(tx.inputs.length)
+    tx.witnesses = witnesses
+
     client = Client.new(privkey)
-    stx = client.sign_transaction(tx)
-    puts "tx_hash:", stx.hash
-    stx.witnesses
+    client.sign_transaction(tx)
+  end
+
+  def simpleSign(privkey, tx_path)
+    tx_s = File.read(tx_path).strip
+    tx_json = JSON.parse(tx_s, symbolize_names: true)
+    tx = CKB::Types::Transaction.from_h(tx_json)
+
+    # fix witnesses
+    witnesses = fake_witnesses(tx.inputs.length)
+    tx.witnesses = witnesses
+
+    client = Client.new(privkey)
+    client.simple_sign_transaction(tx)
   end
 
   def systemScript
