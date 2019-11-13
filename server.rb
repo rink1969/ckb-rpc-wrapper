@@ -80,15 +80,13 @@ class MyHandler
     }
   end
 
-  def sendRawTransaction(rtx_path)
-    tx_s = File.read(rtx_path).strip
+  def sendRawTransaction(tx_s)
     tx_json = JSON.parse(tx_s, symbolize_names: true)
     tx = CKB::Types::Transaction.from_h(tx_json)
     send_raw_transaction(tx)
   end
 
-  def sendTransaction(privkey, tx_path)
-    tx_s = File.read(tx_path).strip
+  def sendTransaction(privkey, tx_s)
     tx_json = JSON.parse(tx_s, symbolize_names: true)
     tx = CKB::Types::Transaction.from_h(tx_json)
 
@@ -100,8 +98,7 @@ class MyHandler
     client.send_transaction(tx)
   end
 
-  def sign(privkey, tx_path)
-    tx_s = File.read(tx_path).strip
+  def sign(privkey, tx_s)
     tx_json = JSON.parse(tx_s, symbolize_names: true)
     tx = CKB::Types::Transaction.from_h(tx_json)
 
@@ -113,8 +110,7 @@ class MyHandler
     client.sign_transaction(tx)
   end
 
-  def simpleSign(privkey, tx_path)
-    tx_s = File.read(tx_path).strip
+  def simpleSign(privkey, tx_s)
     tx_json = JSON.parse(tx_s, symbolize_names: true)
     tx = CKB::Types::Transaction.from_h(tx_json)
 

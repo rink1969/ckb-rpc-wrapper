@@ -133,18 +133,45 @@ curl -X POST --data '{"jsonrpc": "2.0", "method":"queryLiveCellsByHeights", "par
 {"jsonrpc":"2.0","result":{"inputs":[{"previous_output":{"tx_hash":"0xf6f4d282e896b2842b50a8209a021820bc9aabbd3ba200182c371dbe6aa5f62a","index":"0x0"},"since":"0x0"},{"previous_output":{"tx_hash":"0x79a025f64198b35338cb4d41aeeb7ee5329389b50265963b4f6261daf64d2f22","index":"0x0"},"since":"0x0"}],"capacity":"407337001917"},"id":1}
 ```
 
+### sign
+##### args
+1. privkey of sender.
+2. transaction(without signature in witnesses).
+
+##### result
+witnesses of the transaction. With WitnessArgs.
+
+```shell
+curl -X POST --data '{"jsonrpc": "2.0", "method":"sign", "params":["0xc1d3653395d6dc74e11d97a3ca2e4175067b80f525a3d8a2baf9129de4bbbbd3","{\"version\": \"0x0\", \"cell_deps\": [{\"out_point\": {\"tx_hash\": \"0x8918ec6031e131b6398e4e656fad08ccb3756e7bea0df81c160b845f9c4feff5\", \"index\": \"0x0\"}, \"dep_type\": \"code\"}], \"header_deps\": [], \"inputs\": [{\"previous_output\": {\"tx_hash\": \"0x9bba636392badc6f4ba4fcad05ad56ffb6c2645152ec4711b9726b9aba2df454\", \"index\": \"0x0\"}, \"since\": \"0x0\"}], \"outputs\": [{\"capacity\": \"0x174857a800\", \"lock\": {\"code_hash\": \"0x0274eb897aef04482f737d3fbee9c5983e510622c6cecd78f545e433ae6e70f0\", \"args\": \"0xfd03fd824f9b777f3671ab776bd694cc76e3c09d\", \"hash_type\": \"data\"}}], \"outputs_data\": [\"0x\"], \"witnesses\": [\"0x\"]}"], "id": 1}' http://localhost:8999
+```
+```json
+{"jsonrpc":"2.0","result":["0x55000000100000005500000055000000410000009b5ed403679c262ae07c8734c2f0b493cc0ebf2ac8166687c6a841de68c4edc77ad179d5bab8bc0b9a299084c8b7846577e00292a5285360f0debb419864582c00"],"id":1}
+```
+
+### simpleSign
+##### args
+1. privkey of sender.
+2. transaction(without signature in witnesses).
+
+##### result
+witnesses of the transaction. No WitnessArgs, only sign tx_hash.
+
+```shell
+same as sign, just replace method with simpleSign.
+```
+```json
+{"jsonrpc":"2.0","result":["0xb42938e474df326f261d7afcb1a67c4c637895930763d968c19df9fe1f22d0391c4a831978de9860009e3acfcb757f39452db154e4a5c8f01ee42335c779615f00"],"id":1}
+```
+
 ### sendRawTransaction
 ##### args
-1. path of raw transaction(with signature in witnesses).
-```json
-{"hash":"0x","header_deps":[],"inputs":[{"previous_output":{"index":"0x0","tx_hash":"0x29578c3b657ad8402d848ff72116330e62bf6f2bebc3be14b65bce077017114b"},"since":"0x0"}],"outputs_data":["0x","0x"],"outputs":[{"capacity":"0x174876e800","type":null,"lock":{"args":"0x4a88cef22e4e71c48c40da51c1d6bd16daa97aa7","hash_type":"data","code_hash":"0x0274eb897aef04482f737d3fbee9c5983e510622c6cecd78f545e433ae6e70f0"}},{"capacity":"0x18233bceff","type":null,"lock":{"args":"0x4a88cef22e4e71c48c40da51c1d6bd16daa97aa7","hash_type":"type","code_hash":"0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8"}}],"witnesses":["0x041c4d86a1cb4ca6dc8bee242e012f33f8b2b151ef1340c4d0fd33d511e39c2952eee6276109f0d6a0bef056143b4fce60453559186def5605e88d9b4e9afc8601"],"version":"0x0","cell_deps":[{"out_point":{"index":"0x0","tx_hash":"0xb815a396c5226009670e89ee514850dcde452bca746cdd6b41c104b50e559c70"},"dep_type":"dep_group"}]}
-```
+1. raw transaction(with signature in witnesses).
 
 ##### result
 transaction hash.
 
 ```shell
-curl -X POST --data '{"jsonrpc": "2.0", "method":"sendRawTransaction", "params":["/path/to/rtx"], "id": 1}' http://localhost:8999
+similiar with sign, just append witnesses which get from sing.
 ```
 ```json
 {"jsonrpc":"2.0","result":"0xb815a396c5226009670e89ee514850dcde452bca746cdd6b41c104b50e559c70","id":1}
@@ -153,49 +180,16 @@ curl -X POST --data '{"jsonrpc": "2.0", "method":"sendRawTransaction", "params":
 ### sendTransaction
 ##### args
 1. privkey of sender.
-2. path of transaction(without signature in witnesses).
-```json
-{"hash":"0x","header_deps":[],"inputs":[{"previous_output":{"index":"0x0","tx_hash":"0x29578c3b657ad8402d848ff72116330e62bf6f2bebc3be14b65bce077017114b"},"since":"0x0"}],"outputs_data":["0x","0x"],"outputs":[{"capacity":"0x174876e800","type":null,"lock":{"args":"0x4a88cef22e4e71c48c40da51c1d6bd16daa97aa7","hash_type":"data","code_hash":"0x0274eb897aef04482f737d3fbee9c5983e510622c6cecd78f545e433ae6e70f0"}},{"capacity":"0x18233bceff","type":null,"lock":{"args":"0x4a88cef22e4e71c48c40da51c1d6bd16daa97aa7","hash_type":"type","code_hash":"0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8"}}],"witnesses":["0x"],"version":"0x0","cell_deps":[{"out_point":{"index":"0x0","tx_hash":"0xb815a396c5226009670e89ee514850dcde452bca746cdd6b41c104b50e559c70"},"dep_type":"dep_group"}]}
-```
+2. transaction(without signature in witnesses).
 
 ##### result
 transaction hash.
 
 ```shell
-curl -X POST --data '{"jsonrpc": "2.0", "method":"sendTransaction", "params":["0xc1d3653395d6dc74e11d97a3ca2e4175067b80f525a3d8a2baf9129de4bbbbd3", "/path/to/tx"], "id": 1}' http://localhost:8999
+same as sign, just replace method with sendTransaction.
 ```
 ```json
 {"jsonrpc":"2.0","result":"0xb815a396c5226009670e89ee514850dcde452bca746cdd6b41c104b50e559c70","id":1}
-```
-
-### sign
-##### args
-1. privkey of sender.
-2. path of transaction(without signature in witnesses). same as `sendTransaction`.
-
-##### result
-witnesses of the transaction. With WitnessArgs.
-
-```shell
-curl -X POST --data '{"jsonrpc": "2.0", "method":"sign", "params":["0xc1d3653395d6dc74e11d97a3ca2e4175067b80f525a3d8a2baf9129de4bbbbd3","/path/to/tx"], "id": 1}' http://localhost:8999
-```
-```json
-{"jsonrpc":"2.0","result":["0x55000000100000005500000055000000410000002455311f81df40644fd11f02f26b894bca2b3aa4572f6f3534c3977c31c7daee64302dc7e28a509af3434d96efa16c9f61eda7a9dae55a8e7291d90a26e2e0a700"],"id":1}
-```
-
-### simpleSign
-##### args
-1. privkey of sender.
-2. path of transaction(without signature in witnesses). same as `sendTransaction`.
-
-##### result
-witnesses of the transaction. No WitnessArgs, only sign tx_hash.
-
-```shell
-curl -X POST --data '{"jsonrpc": "2.0", "method":"simpleSign", "params":["0xc1d3653395d6dc74e11d97a3ca2e4175067b80f525a3d8a2baf9129de4bbbbd3","/path/to/tx"], "id": 1}' http://localhost:8999
-```
-```json
-{"jsonrpc":"2.0","result":["0x041c4d86a1cb4ca6dc8bee242e012f33f8b2b151ef1340c4d0fd33d511e39c2952eee6276109f0d6a0bef056143b4fce60453559186def5605e88d9b4e9afc8601"],"id":1}
 ```
 
 ### systemScript
